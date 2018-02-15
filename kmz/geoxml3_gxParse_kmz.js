@@ -117,16 +117,17 @@ geoXML3.parser = function (options) {
   if (!parserOptions.infoWindow && parserOptions.singleInfoWindow)
     parserOptions.infoWindow = new google.maps.InfoWindow();
 
-  var parseKmlString = function (kmlString, docSet) {
+  var parseKmlString = function (kmlString, layerTag, docSet) {
     // Internal values for the set of documents as a whole
     var internals = {
       parser: this,
       docSet: docSet || [],
       remaining: 1,
-      parseOnly: !(parserOptions.afterParse || parserOptions.processStyles)
+      parseOnly: !(layerTag || parserOptions.afterParse || parserOptions.processStyles)
     };
     thisDoc = new Object();
     thisDoc.internals = internals;
+    thisDoc.baseUrl = layerTag;
     internals.docSet.push(thisDoc);
     render(geoXML3.xmlParse(kmlString),thisDoc);
   }
@@ -194,6 +195,12 @@ geoXML3.parser = function (options) {
     geoXML3.fetchXML(url, resFunc);
   }
 
+  var hideDocumentByTag = function(tag) {
+    if(docsByUrl[tag]) {
+      hideDocument(docsByUrl[tag]);
+    }
+  }
+
   var hideDocument = function (doc) {
     if (!doc) doc = docs[0];
     // Hide the map objects associated with a document
@@ -222,6 +229,12 @@ geoXML3.parser = function (options) {
       }
     }
   };
+
+  var showDocumentByTag = function(tag){
+    if(docsByUrl[tag]) {
+      showDocument(docsByUrl[tag]);
+    }
+  }
 
   var showDocument = function (doc) {
     if (!doc) doc = docs[0];
@@ -1411,16 +1424,18 @@ function processStyleUrl(node) {
     docsByUrl:   docsByUrl,
     kmzMetaData: kmzMetaData,
 
-    parse:          parse,
-    render:         render,
-    parseKmlString: parseKmlString,
-    hideDocument:   hideDocument,
-    showDocument:   showDocument,
-    processStyles:  processStyles,
-    createMarker:   createMarker,
-    createOverlay:  createOverlay,
-    createPolyline: createPolyline,
-    createPolygon:  createPolygon
+    parse:              parse,
+    render:             render,
+    parseKmlString:     parseKmlString,
+    hideDocument:       hideDocument,
+    hideDocumentByTag:  hideDocumentByTag,
+    showDocument:       showDocument,
+    showDocumentByTag:  showDocumentByTag,
+    processStyles:      processStyles,
+    createMarker:       createMarker,
+    createOverlay:      createOverlay,
+    createPolyline:     createPolyline,
+    createPolygon:      createPolygon
   };
 };
 // End of KML Parser
