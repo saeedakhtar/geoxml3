@@ -1249,6 +1249,7 @@ function processStyleUrl(node) {
   // Create Polyline
   var createPolyline = function(placemark, doc) {
     var paths = [];
+    let maxAltitude = 0;
     var bounds = new google.maps.LatLngBounds();
     if (placemark.LineString) {
       for (var j=0; j<placemark.LineString.length; j++) {
@@ -1256,6 +1257,9 @@ function processStyleUrl(node) {
         var coords = placemark.LineString[j].coordinates;
         for (var i=0;i<coords.length;i++) {
           var pt = new google.maps.LatLng(coords[i].lat, coords[i].lng);
+          if(coords[i].alt && coords[i].alt > maxAltitude) {
+            maxAltitude = coords[i].alt;
+          }
           path.push(pt);
           bounds.extend(pt);
         }
@@ -1267,6 +1271,9 @@ function processStyleUrl(node) {
         var coords = placemark.Track[j].coordinates;
         for (var i=0;i<coords.length;i++) {
           var pt = new google.maps.LatLng(coords[i].lat, coords[i].lng);
+          if(coords[i].alt && coords[i].alt > maxAltitude) {
+            maxAltitude = coords[i].alt;
+          }
           path.push(pt);
           bounds.extend(pt);
         }
@@ -1284,7 +1291,8 @@ function processStyleUrl(node) {
       strokeWeight:  placemark.style.line.width,
       strokeOpacity: kmlStrokeColor.opacity,
       title:         placemark.name,
-      visible:       placemark.visibility
+      visible:       placemark.visibility,
+      zIndex:        maxAltitude,
     });
     if (paths.length > 1) {
       polyOptions.paths = paths;
@@ -1307,12 +1315,16 @@ function processStyleUrl(node) {
     var bounds = new google.maps.LatLngBounds();
     var pathsLength = 0;
     var paths = [];
+    let maxAltitude = 0;
     for (var polygonPart=0;polygonPart<placemark.Polygon.length;polygonPart++) {
       for (var j=0; j<placemark.Polygon[polygonPart].outerBoundaryIs.length; j++) {
         var coords = placemark.Polygon[polygonPart].outerBoundaryIs[j].coordinates;
         var path = [];
         for (var i=0;i<coords.length;i++) {
           var pt = new google.maps.LatLng(coords[i].lat, coords[i].lng);
+          if(coords[i].alt && coords[i].alt > maxAltitude) {
+            maxAltitude = coords[i].alt;
+          }
           path.push(pt);
           bounds.extend(pt);
         }
@@ -1324,6 +1336,9 @@ function processStyleUrl(node) {
         var path = [];
         for (var i=0;i<coords.length;i++) {
           var pt = new google.maps.LatLng(coords[i].lat, coords[i].lng);
+          if(coords[i].alt && coords[i].alt > maxAltitude) {
+            maxAltitude = coords[i].alt;
+          }
           path.push(pt);
           bounds.extend(pt);
         }
@@ -1350,7 +1365,8 @@ function processStyleUrl(node) {
       strokeOpacity: kmlStrokeColor.opacity,
       fillColor:     kmlFillColor.color,
       fillOpacity:   kmlFillColor.opacity,
-      visible:       placemark.visibility
+      visible:       placemark.visibility,
+      zIndex:        maxAltitude,
     });
     var p = new google.maps.Polygon(polyOptions);
     p.bounds = bounds;
