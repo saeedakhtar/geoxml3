@@ -195,6 +195,17 @@ geoXML3.parser = function (options) {
     geoXML3.fetchXML(url, resFunc);
   }
 
+  var removeDocumentByTag = function(tag) {
+    if(docsByUrl[tag]) {
+      hideDocument(docsByUrl[tag]);
+      const index = docs.indexOf(docsByUrl[tag]);
+      if(index != -1) {
+        docs.splice(index, 1);
+        delete docsByUrl[tag];
+      }
+    }
+  }
+
   var hideDocumentByTag = function(tag) {
     if(docsByUrl[tag]) {
       hideDocument(docsByUrl[tag]);
@@ -1424,18 +1435,17 @@ function processStyleUrl(node) {
     docsByUrl:   docsByUrl,
     kmzMetaData: kmzMetaData,
 
-    parse:              parse,
-    render:             render,
-    parseKmlString:     parseKmlString,
-    hideDocument:       hideDocument,
-    hideDocumentByTag:  hideDocumentByTag,
-    showDocument:       showDocument,
-    showDocumentByTag:  showDocumentByTag,
-    processStyles:      processStyles,
-    createMarker:       createMarker,
-    createOverlay:      createOverlay,
-    createPolyline:     createPolyline,
-    createPolygon:      createPolygon
+    parse:                parse,
+    render:               render,
+    parseKmlString:       parseKmlString,
+    removeDocumentByTag:  removeDocumentByTag,
+    hideDocumentByTag:    hideDocumentByTag,
+    showDocumentByTag:    showDocumentByTag,
+    processStyles:        processStyles,
+    createMarker:         createMarker,
+    createOverlay:        createOverlay,
+    createPolyline:       createPolyline,
+    createPolygon:        createPolygon
   };
 };
 // End of KML Parser
