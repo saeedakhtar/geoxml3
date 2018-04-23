@@ -132,6 +132,38 @@ geoXML3.parser = function (options) {
     render(geoXML3.xmlParse(kmlString),thisDoc);
   }
 
+  var updateKmlZIndex_Multiply = function(tag, multiplier){
+    let doc = docsByUrl[tag];
+    if(!doc) {
+      return;
+    }
+    // Hide the map objects associated with a document
+    let i;
+    if (!!doc.markers) {
+      for (i = 0; i < doc.markers.length; i++) {
+        if(!!doc.markers[i].infoWindow) doc.markers[i].infoWindow.close();
+        doc.markers[i].zIndex *= multiplier;
+      }
+    }
+    if (!!doc.ggroundoverlays) {
+      for (i = 0; i < doc.ggroundoverlays.length; i++) {
+        doc.ggroundoverlays[i].zIndex *= multiplier;
+      }
+    }
+    if (!!doc.gpolylines) {
+      for (i=0;i<doc.gpolylines.length;i++) {
+        if(!!doc.gpolylines[i].infoWindow) doc.gpolylines[i].infoWindow.close();
+        doc.gpolylines[i].zIndex *= multiplier;
+      }
+    }
+    if (!!doc.gpolygons) {
+      for (i=0;i<doc.gpolygons.length;i++) {
+        if(!!doc.gpolygons[i].infoWindow) doc.gpolygons[i].infoWindow.close();
+        doc.gpolygons[i].zIndex *= multiplier;
+      }
+    }
+  }
+
   var parse = function (urls, docSet) {
     // Process one or more KML documents
     if (!parserName) {
@@ -1451,17 +1483,18 @@ function processStyleUrl(node) {
     docsByUrl:   docsByUrl,
     kmzMetaData: kmzMetaData,
 
-    parse:                parse,
-    render:               render,
-    parseKmlString:       parseKmlString,
-    removeDocumentByTag:  removeDocumentByTag,
-    hideDocumentByTag:    hideDocumentByTag,
-    showDocumentByTag:    showDocumentByTag,
-    processStyles:        processStyles,
-    createMarker:         createMarker,
-    createOverlay:        createOverlay,
-    createPolyline:       createPolyline,
-    createPolygon:        createPolygon
+    parse:                    parse,
+    render:                   render,
+    parseKmlString:           parseKmlString,
+    updateKmlZIndex_Multiply: updateKmlZIndex_Multiply,
+    removeDocumentByTag:      removeDocumentByTag,
+    hideDocumentByTag:        hideDocumentByTag,
+    showDocumentByTag:        showDocumentByTag,
+    processStyles:            processStyles,
+    createMarker:             createMarker,
+    createOverlay:            createOverlay,
+    createPolyline:           createPolyline,
+    createPolygon:            createPolygon
   };
 };
 // End of KML Parser
